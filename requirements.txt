@@ -1,0 +1,42 @@
+# # ── Core graph framework ────────────────────────────────────────────
+# langgraph>=0.2.0
+# langchain-core>=0.2.0
+
+# # ── OCR ─────────────────────────────────────────────────────────────
+# paddlepaddle>=3.0.0         # CPU build; use paddlepaddle-gpu for CUDA
+# paddleocr>=2.8.0
+
+# # ── Image preprocessing ──────────────────────────────────────────────
+# opencv-python>=4.9.0
+# numpy>=1.26.0
+# Pillow>=10.0.0
+
+# # ── VLM: Qwen2-VL (HuggingFace) ─────────────────────────────────────
+# # Comment out if using Ollama backend instead
+# transformers>=4.45.0
+# accelerate>=0.33.0
+# torch>=2.2.0
+# qwen-vl-utils>=0.0.8
+
+# # ── HTTP (for Ollama backend) ────────────────────────────────────────
+# requests>=2.31.0
+
+# # ── Utilities ────────────────────────────────────────────────────────
+# python-dotenv>=1.0.0
+
+
+
+
+# # Lightweight Backend Dependencies
+# fastapi>=0.104.1
+# uvicorn>=0.24.0
+# boto3>=1.34.0
+# python-dotenv>=1.0.0
+# pydantic>=2.0.0
+# python-multipart>=0.0.6
+# langchain-openai>=0.1.0
+
+# # Frontend Dependencies
+# streamlit>=1.32.0
+# pandas>=2.0.0
+# requests>=2.31.0

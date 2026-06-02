@@ -1,0 +1,41 @@
+{
+  "document_type": "id_card",
+  "extracted_data": {
+    "full_name": "SANDARUWAN KUMARASIRI PELANDA KURUNDUKARAGE ISURU",
+    "id_number": "200015303393",
+    "date_of_birth": null,
+    "nationality": null,
+    "gender": null,
+    "issue_date": "20.05.2022",
+    "expiry_date": "19.05.2026",
+    "address": "14/1/B, NEAR THE DAMME BRIDGE, RATHNAPURA, ELAPATHA",
+    "mrz_line1": null,
+    "mrz_line2": null
+  },
+  "validation": {
+    "is_valid": true,
+    "confidence_score": 0.7,
+    "field_scores": {
+      "full_name": 1.0,
+      "id_number": 1.0,
+      "dob": 0.0,
+      "nationality": 0.0,
+      "expiry": 1.0,
+      "mrz": 0.0
+    },
+    "errors": [],
+    "warnings": [],
+    "requires_human_review": false
+  },
+  "metadata": {
+    "input_path": "..\\data\\university_id.jpg",
+    "page_number": 0,
+    "image_quality_score": 0.511,
+    "classifier_confidence": 0.0,
+    "ocr_zones_count": 1,
+    "ocr_text_length": 294,
+    "retry_count": 1,
+    "pipeline_errors": [],
+    "timestamp": "2026-05-31T08:26:18.020948"
+  }
+}

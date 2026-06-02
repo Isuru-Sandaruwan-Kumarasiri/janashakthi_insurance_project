@@ -1,0 +1,41 @@
+[build-system]
+requires = ["setuptools>=61.0"]
+build-backend = "setuptools.build_meta"
+
+[project]
+name = "docagent-hub"
+version = "0.1.0"
+description = "Intelligent Document Processing Pipeline for Insurance Documents"
+readme = "README.md"
+requires-python = ">=3.10"
+dependencies = [
+    "fastapi==0.104.1",
+    "uvicorn==0.24.0",
+    "paddlepaddle==2.6.2",
+    "paddleocr==2.9.1",
+    "Pillow==10.4.0",
+    "numpy==1.26.4",
+    "requests==2.31.0",
+    "python-multipart==0.0.6",
+    "protobuf==3.20.2",
+    "shapely",
+    "pyclipper",
+    "matplotlib",
+    "python-dotenv",
+    "transformers",
+    "langchain",
+    "langchain-classic",
+    "langchain-openai",
+    "langgraph",
+    "pymupdf",
+    "opencv-python-headless",
+    "streamlit",
+    "pandas"
+]
+
+[project.optional-dependencies]
+dev = [
+    "pytest",
+    "black",
+    "flake8"
+]

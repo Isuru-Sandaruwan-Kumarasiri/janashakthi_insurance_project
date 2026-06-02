@@ -1,0 +1,31 @@
+{
+  "document_type": "unknown",
+  "extracted_data": {},
+  "validation": {
+    "is_valid": false,
+    "confidence_score": 0.0,
+    "field_scores": {},
+    "errors": [
+      "Document type could not be determined"
+    ],
+    "warnings": [],
+    "should_retry": true,
+    "retry_reason": null,
+    "requires_human_review": true,
+    "human_review_reason": null
+  },
+  "metadata": {
+    "input_path": "data/medical.jpg",
+    "page_number": 0,
+    "image_quality_score": 0.552,
+    "classifier_confidence": 0.0,
+    "ocr_zones_count": 1,
+    "ocr_text_length": 75,
+    "raw_ocr_text": "Dr. K. W. TAGLOLOY\n1961 Junus . Hehmlets\n1907\n0 0\n1953.\nimmission : Mr.\n0 0",
+    "retry_count": 2,
+    "pipeline_errors": [
+      "VLM error: HTTPConnectionPool(host='localhost', port=11434): Max retries exceeded with url: /api/generate (Caused by NewConnectionError(\"HTTPConnection(host='localhost', port=11434): Failed to establish a new connection: [WinError 10061] No connection could be made because the target machine actively refused it\"))"
+    ],
+    "timestamp": "2026-06-02T14:44:36.089061"
+  }
+}

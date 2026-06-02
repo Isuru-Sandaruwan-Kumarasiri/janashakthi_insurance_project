@@ -1,0 +1,42 @@
+# ============================================================
+# DocAgent OCR API — Production Dependencies
+# ============================================================
+# Slim requirements for the containerized OCR API.
+# Does NOT include Streamlit, Jupyter, or dev tools.
+# ============================================================
+
+# --- Web framework ---
+fastapi==0.104.1
+uvicorn==0.24.0
+python-multipart==0.0.6
+
+# --- OCR engines ---
+paddleocr>=2.9.1
+paddlepaddle>=2.6.2
+
+# --- Image processing ---
+opencv-python-headless>=4.9.0
+Pillow>=10.4.0
+numpy>=1.26.4
+
+# --- Transformers (TrOCR + LayoutLMv3) ---
+transformers>=4.40.0
+# PyTorch CPU — installed separately in Dockerfile via --index-url
+
+# --- LLM extraction ---
+langchain>=0.2.0
+langchain-openai>=0.1.0
+langgraph>=0.1.0
+
+# --- Validation ---
+pydantic>=2.0.0
+
+# --- PDF support ---
+PyMuPDF>=1.24.0
+
+# --- Utilities ---
+python-dotenv>=1.0.0
+requests>=2.31.0
+protobuf>=3.20.0
+shapely
+pyclipper
