@@ -24,10 +24,16 @@ def _get_paddle():
     global _paddle_instance
     if _paddle_instance is None:
         from paddleocr import PaddleOCR
+        # [COMMENTED OUT] Previous configuration without angle classification:
+        # _paddle_instance = PaddleOCR(
+        #     lang="en",            # Change to "ch" for Chinese, "ms" for Malay, etc.
+        # )
+        # [ADDED] Enable angle classification to auto-correct 180-degree flipped text:
         _paddle_instance = PaddleOCR(
-            lang="en",            # Change to "ch" for Chinese, "ms" for Malay, etc.
+            lang="en",
+            use_angle_cls=True,
         )
-        logger.info("[PaddleOCR] Model loaded.")
+        logger.info("[PaddleOCR] Model loaded (with angle classifier).")
     return _paddle_instance
 
 

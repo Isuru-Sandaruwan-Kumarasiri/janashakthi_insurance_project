@@ -36,11 +36,12 @@ def _route_after_classifier(state: AgentState) -> str:
     ocr_text = state.get("ocr_raw_text", "")
     doc_type = state.get("doc_type", "unknown")
 
-    if doc_type == "unknown" and len(ocr_text) < MIN_OCR_CHARS:
-        logger.warning("[Graph] OCR text too short and type unknown — skipping VLM")
-        # Populate minimal output so validator still runs
-        state["extracted_fields"] = {}
-        return "validator"   # Go straight to validator to build error output
+    # Previous logic that skipped the VLM when OCR failed to detect text:
+    # if doc_type == "unknown" and len(ocr_text) < MIN_OCR_CHARS:
+    #     logger.warning("[Graph] OCR text too short and type unknown — skipping VLM")
+    #     # Populate minimal output so validator still runs
+    #     state["extracted_fields"] = {}
+    #     return "validator"   # Go straight to validator to build error output
 
     return "vlm_extractor"
 

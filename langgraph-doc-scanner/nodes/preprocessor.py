@@ -41,6 +41,11 @@ def run_preprocessor(state: AgentState) -> dict:
     gray = cv2.cvtColor(img, cv2.COLOR_BGR2GRAY)
     steps_applied.append("grayscale")
 
+    # [ADDED] 2b. Detect and correct 90-degree rotations (e.g. vertically oriented ID cards)
+    img, gray, rot_step = _detect_and_correct_90_rotation(img, gray)
+    if rot_step:
+        steps_applied.append(rot_step)
+
     # 3. Denoise
     gray = _denoise(gray)
     steps_applied.append("denoise")
@@ -156,3 +161,47 @@ def _resize_for_ocr(img: np.ndarray) -> Tuple[np.ndarray, bool]:
     new_h = int(h * scale)
     resized = cv2.resize(img, (new_w, new_h), interpolation=cv2.INTER_LANCZOS4)
     return resized, True
+
+
+# [ADDED] New function to detect and correct 90-degree image rotation
+def _detect_and_correct_90_rotation(img: np.ndarray, gray: np.ndarray) -> Tuple[np.ndarray, np.ndarray, str]:
+    """
+    Detects if the document image is rotated by ~90 degrees (e.g. a landscape
+    card photographed in portrait orientation) by counting the ratio of vertical
+    vs horizontal lines via Hough Transform.
+    If vertical lines dominate, rotates the image 90 degrees clockwise.
+
+    Returns:
+        (color_image, grayscale_image, step_label)
+        step_label is "" if no rotation was applied.
+    """
+    edges = cv2.Canny(gray, 50, 150, apertureSize=3)
+    lines = cv2.HoughLines(edges, 1, np.pi / 180, threshold=100)
+
+    if lines is None:
+        return img, gray, ""
+
+    horizontal_count = 0
+    vertical_count = 0
+
+    for line in lines[:50]:  # Analyse up to 50 strongest lines
+        rho, theta = line[0]
+        angle_deg = np.degrees(theta) - 90
+        # angle_deg near 0 → horizontal line, near ±90 → vertical line
+        if abs(angle_deg) < 30:
+            horizontal_count += 1
+        elif abs(angle_deg) > 60:
+            vertical_count += 1
+
+    # If vertical lines significantly outnumber horizontal ones, rotate 90° CW
+    if vertical_count > horizontal_count * 1.5 and vertical_count > 5:
+        logger.info(
+            f"[Preprocessor] Detected vertical text orientation "
+            f"(v_lines={vertical_count}, h_lines={horizontal_count}). "
+            f"Rotating 90° clockwise."
+        )
+        img_rotated = cv2.rotate(img, cv2.ROTATE_90_CLOCKWISE)
+        gray_rotated = cv2.rotate(gray, cv2.ROTATE_90_CLOCKWISE)
+        return img_rotated, gray_rotated, "rotate_90_cw"
+
+    return img, gray, ""
