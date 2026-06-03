@@ -5,6 +5,12 @@ import pandas as pd
 import json
 from datetime import datetime, timedelta
 import requests
+import os
+
+
+# Fallback to localhost if no environment variable is provided
+API_BASE_URL = os.getenv("API_BASE_URL", "http://localhost:8000")
+
 
 def main():
     st.set_page_config(page_title="Janashakthi Life Insurance Proposal", 
@@ -328,8 +334,14 @@ def main():
                         }
                         form_data = {"proposal_data": json.dumps(data)}
                         
+                        # ver_response = requests.post(
+                        #     "http://localhost:8000/api/verify-documents",
+                        #     files=files,
+                        #     data=form_data,
+                        #     timeout=300
+                        # )
                         ver_response = requests.post(
-                            "http://localhost:8000/api/verify-documents",
+                            f"{API_BASE_URL}/api/verify-documents", # <-- UPDATED
                             files=files,
                             data=form_data,
                             timeout=300
@@ -397,7 +409,9 @@ def main():
                         else:
                             with st.spinner("Saving Proposal Data to AWS S3..."):
                                 try:
-                                    api_url = f"http://localhost:8000/api/proposals/{proposal_id}"
+                                    # api_url = f"http://localhost:8000/api/proposals/{proposal_id}"
+                                    # s3_response = requests.post(api_url, json=data)
+                                    api_url = f"{API_BASE_URL}/api/proposals/{proposal_id}" # <-- UPDATED
                                     s3_response = requests.post(api_url, json=data)
                                     
                                     if s3_response.status_code == 200:
