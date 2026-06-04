@@ -1,0 +1,21 @@
+# Environments
+venv/
+env/
+
+# Python compiled files
+__pycache__/
+*.pyc
+*.pyo
+*.pyd
+
+# Secrets and Configs
+.env
+
+# Databases and Data (To keep the repo lightweight)
+database/
+vector_store/
+data/
+
+# OS generated files
+.DS_Store
+Thumbs.db
