@@ -5,74 +5,65 @@ It uses a **LangGraph** OCR pipeline, **Vision-Language Models (VLMs)**, and an 
 
 ---
 
-## 📐 Architecture Diagram
+## 📐 Architecture
 
-> Open [`architecture.drawio`](./architecture.drawio) in [draw.io / diagrams.net](https://app.diagrams.net/) for the interactive diagram.
+```mermaid
+flowchart TD
+    subgraph FE["&nbsp;&nbsp;&nbsp;&nbsp;FRONTEND PATH (Streamlit · Port 8501)&nbsp;&nbsp;&nbsp;&nbsp;"]
+        direction TB
+        F1["User Browser"]
+        F2["Proposal Form\nform.py"]
+        F3["Document Uploader\nID Card + Utility Bill"]
+        F4["FastAPI\nPOST /api/verify-documents\nPort 8000"]
+        F5["AWS S3 Storage\nboto3 · proposals/{id}/{ts}.json"]
+        F6["Verification Result\nPASS ✅  /  FAIL ❌  ·  Score /100"]
+        F1 --> F2 --> F3 --> F4 --> F5 --> F6
+    end
 
+    subgraph AG["&nbsp;&nbsp;&nbsp;&nbsp;VERIFICATION AGENT (document_verification_agent/)&nbsp;&nbsp;&nbsp;&nbsp;"]
+        direction TB
+        A1["Agent Orchestrator\nagent.py"]
+        A2["ThreadPoolExecutor (×2)\nConcurrent OCR on both docs"]
+        A3["OCR Bridge\nocr_bridge.py"]
+        A4["LLM Comparator\nllm_comparator.py · LangChain"]
+        A5["OpenRouter API\nGemini 2.5 Flash · Llama 3.3-70B fallback"]
+        A6["Field Scoring\nNIC 30 · Name 25 · Address 25 · DOB 20"]
+        A1 --> A2 --> A3 --> A4 --> A5 --> A6
+    end
+
+    subgraph LG["&nbsp;&nbsp;&nbsp;&nbsp;LANGGRAPH OCR PIPELINE (langgraph-doc-scanner/)&nbsp;&nbsp;&nbsp;&nbsp;"]
+        direction TB
+        L1["① Preprocessor\nnodes/preprocessor.py · OpenCV\nGrayscale · Denoise · Deskew\nCLAHE · Binarise · Resize"]
+        L2["② PaddleOCR\nnodes/paddle_ocr.py\nText Blocks · BBox · Confidence"]
+        L3["③ Classifier\nnodes/classifier.py\nid_card · water_bill · electricity_bill"]
+        L4{"Readable?"}
+        L5["④ VLM Extractor\nmodels/vlm_client.py\nOpenRouter · Qwen2-VL-7B · Ollama LLaVA"]
+        L6["⑤ Validator\nnodes/validator.py\nSchema · Final Output"]
+        L1 --> L2 --> L3 --> L4
+        L4 -->|"Yes"| L5 --> L6
+        L4 -->|"No → skip VLM"| L6
+    end
+
+    MERGE["verify_documents()\nPASS ✅  score ≥ 80  /  FAIL ❌  score &lt; 80"]
+
+    F4 -->|"verify_documents()"| A1
+    A3 -->|"graph.invoke()"| L1
+    L6 -->|"OCR result"| A4
+    A6 --> MERGE
+    F6 -.->|"display result"| MERGE
+
+    classDef pathBox fill:#2a2a3a,stroke:#555566,color:#c0c0d0,rx:4
+    classDef node fill:#3a3a4a,stroke:#666677,color:#e8e8e8
+    classDef diamond fill:#3a3a4a,stroke:#aaaacc,color:#e8e8e8
+    classDef merge fill:#1e1e2e,stroke:#aaaacc,color:#ffffff,font-weight:bold
+
+    class FE,AG,LG pathBox
+    class F1,F2,F3,F4,F5,F6 node
+    class A1,A2,A3,A4,A5,A6 node
+    class L1,L2,L3,L5,L6 node
+    class L4 diamond
+    class MERGE merge
 ```
-┌──────────────────────────────────────────────────────────────────────────────────────────────┐
-│                      JANASHAKTHI DOCUMENT VERIFICATION SYSTEM                                │
-├─────────────────────┬────────────────────────┬──────────────────────────────────────────────┤
-│   Frontend Layer    │    Backend API Layer   │         External Cloud Services              │
-│  (Streamlit :8501)  │    (FastAPI :8000)     │                                              │
-│                     │                        │  ┌──────────────────────────────────────┐   │
-│  ┌───────────────┐  │  ┌─────────────────┐  │  │       OpenRouter API                 │   │
-│  │ Proposal Form │  │  │  FastAPI App    │──┼──▶│  • Gemini 2.5 Flash (VLM + LLM)    │   │
-│  │ (form.py)     │──┼──▶  main.py        │  │  │  • Llama 3.3-70B (fallback)         │   │
-│  │ 6-tab Streamlit│  │  │                │  │  └──────────────────────────────────────┘   │
-│  │ UI            │  │  │ POST /verify   │  │                                              │
-│  └───────────────┘  │  │ POST /proposals│  │  ┌──────────────────────────────────────┐   │
-│                     │  │ GET  /proposals│  │  │       AWS S3                         │   │
-│  ┌───────────────┐  │  └────────┬───────┘  │  │  • proposals/{id}/{timestamp}.json   │   │
-│  │  Doc Upload   │  │           │           │  │  • boto3 SDK · ap-southeast-1        │   │
-│  │ ID Card       │  │  ┌────────▼───────┐  │  └──────────────────────────────────────┘   │
-│  │ Utility Bill  │  │  │  S3 Manager   │──┼──▶                                           │
-│  └───────────────┘  │  │  s3_storage.py│  │  ┌──────────────────────────────────────┐   │
-│                     │  └───────────────┘  │  │   Ollama (optional, local)           │   │
-└─────────────────────┴────────────────────┬┘  │  • LLaVA via localhost:11434         │   │
-                                            │   └──────────────────────────────────────┘   │
-                                            │                                               │
-                         ┌──────────────────▼────────────────────────────────────────────┐ │
-                         │         Document Verification Agent                           │ │
-                         │         (document_verification_agent/)                        │ │
-                         │                                                                │ │
-                         │  ┌───────────────┐   ┌───────────────┐   ┌────────────────┐  │ │
-                         │  │  Orchestrator  │──▶│  OCR Bridge   │──▶│ LLM Comparator │  │ │
-                         │  │  agent.py      │   │  ocr_bridge.py│   │llm_comparator  │  │ │
-                         │  │ ThreadPool(2)  │   │               │   │.py             │  │ │
-                         │  │ Concurrent OCR │   │ graph.invoke()│   │ LangChain +    │  │ │
-                         │  └───────────────┘   └──────┬────────┘   │ OpenRouter     │  │ │
-                         │                             │             │ Score /100     │  │ │
-                         └─────────────────────────────┼─────────────────────────────┘  │ │
-                                                        │                                    │
-                         ┌──────────────────────────────▼──────────────────────────────────┐│
-                         │            LangGraph OCR Pipeline (langgraph-doc-scanner/)       ││
-                         │                                                                   ││
-                         │  ┌──────────┐  ┌──────────┐  ┌──────────┐  ┌──────────┐        ││
-                         │  │①Preproc. │─▶│②PaddleOCR│─▶│③Classify │─▶│ ROUTE?   │        ││
-                         │  │OpenCV    │  │          │  │Keyword   │  │          │        ││
-                         │  │Denoise   │  │OCR Blocks│  │Heuristics│  │readable? │        ││
-                         │  │Deskew    │  │+Confidence│  │id_card   │  └──┬────┬──┘        ││
-                         │  │CLAHE     │  │          │  │water_bill│     │    │            ││
-                         │  │Binarise  │  │          │  │elec_bill │   Yes   No→END        ││
-                         │  └──────────┘  └──────────┘  └──────────┘     │                ││
-                         │                                                 ▼                ││
-                         │                                      ┌──────────────────────┐   ││
-                         │                                      │④ VLM Extractor       │   ││
-                         │                                      │ vlm_client.py        │   ││
-                         │                                      │ OpenRouter (default) │   ││
-                         │                                      │ Qwen2-VL (local GPU) │   ││
-                         │                                      │ Ollama LLaVA (local) │   ││
-                         │                                      └──────────┬───────────┘   ││
-                         │                                                 ▼                ││
-                         │                                      ┌──────────────────────┐   ││
-                         │                                      │⑤ Validator           │   ││
-                         │                                      │ Schema + final output│   ││
-                         │                                      └──────────────────────┘   ││
-                         └───────────────────────────────────────────────────────────────────┘│
-```
-
-> **Full interactive diagram**: [`architecture.drawio`](./architecture.drawio) — open with [draw.io](https://app.diagrams.net/)
 
 ---
 
