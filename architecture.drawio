@@ -1,0 +1,226 @@
+<mxfile host="Electron" modified="2026-06-04T00:00:00.000Z" agent="Antigravity" version="24.7.5" etag="architecture">
+  <diagram id="main" name="System Architecture">
+    <mxGraphModel dx="1422" dy="762" grid="1" gridSize="10" guides="1" tooltips="1" connect="1" arrows="1" fold="1" page="1" pageScale="1" pageWidth="1654" pageHeight="1169" math="0" shadow="0">
+      <root>
+        <mxCell id="0" />
+        <mxCell id="1" parent="0" />
+
+        <!-- ═══════════════════════════════════════════════════════════ -->
+        <!--  TITLE                                                       -->
+        <!-- ═══════════════════════════════════════════════════════════ -->
+        <mxCell id="title" value="Janashakthi Document Verification System — Architecture" style="text;html=1;strokeColor=none;fillColor=none;align=center;verticalAlign=middle;whiteSpace=wrap;rounded=0;fontSize=20;fontStyle=1;fontColor=#1a237e;" vertex="1" parent="1">
+          <mxGeometry x="327" y="20" width="1000" height="40" as="geometry" />
+        </mxCell>
+
+        <!-- ═══════════════════════════════════════════════════════════ -->
+        <!--  LAYER 1 — USER / FRONTEND                                   -->
+        <!-- ═══════════════════════════════════════════════════════════ -->
+        <mxCell id="fe_bg" value="Frontend Layer (Streamlit · Port 8501)" style="swimlane;startSize=30;fillColor=#dae8fc;strokeColor=#6c8ebf;fontStyle=1;fontSize=13;" vertex="1" parent="1">
+          <mxGeometry x="60" y="80" width="440" height="200" as="geometry" />
+        </mxCell>
+
+        <mxCell id="fe_form" value="&lt;b&gt;Proposal Form&lt;/b&gt;&lt;br/&gt;&lt;font style=&quot;font-size: 10px&quot;&gt;frontend/form.py&lt;br/&gt;Streamlit multi-tab UI&lt;br/&gt;Personal Details · Plans · Health&lt;br/&gt;Declaration · Document Upload&lt;/font&gt;" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#dae8fc;strokeColor=#6c8ebf;fontSize=11;" vertex="1" parent="1">
+          <mxGeometry x="80" y="125" width="180" height="130" as="geometry" />
+        </mxCell>
+
+        <mxCell id="fe_upload" value="&lt;b&gt;Document Uploader&lt;/b&gt;&lt;br/&gt;&lt;font style=&quot;font-size: 10px&quot;&gt;ID Card / NIC / Passport&lt;br/&gt;Utility Bill (Water / Electric)&lt;br/&gt;JPG · PNG · PDF · TIFF&lt;/font&gt;" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#dae8fc;strokeColor=#6c8ebf;fontSize=11;" vertex="1" parent="1">
+          <mxGeometry x="290" y="125" width="180" height="130" as="geometry" />
+        </mxCell>
+
+        <!-- ═══════════════════════════════════════════════════════════ -->
+        <!--  LAYER 2 — BACKEND API                                       -->
+        <!-- ═══════════════════════════════════════════════════════════ -->
+        <mxCell id="api_bg" value="Backend API Layer (FastAPI · Port 8000)" style="swimlane;startSize=30;fillColor=#d5e8d4;strokeColor=#82b366;fontStyle=1;fontSize=13;" vertex="1" parent="1">
+          <mxGeometry x="580" y="80" width="440" height="200" as="geometry" />
+        </mxCell>
+
+        <mxCell id="api_main" value="&lt;b&gt;FastAPI App&lt;/b&gt;&lt;br/&gt;&lt;font style=&quot;font-size: 10px&quot;&gt;backend/main.py&lt;br/&gt;POST /api/verify-documents&lt;br/&gt;POST /api/proposals/{id}&lt;br/&gt;GET  /api/proposals/{id}&lt;br/&gt;GET  /health&lt;/font&gt;" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#d5e8d4;strokeColor=#82b366;fontSize=11;" vertex="1" parent="1">
+          <mxGeometry x="600" y="120" width="185" height="140" as="geometry" />
+        </mxCell>
+
+        <mxCell id="api_s3" value="&lt;b&gt;S3 Storage Manager&lt;/b&gt;&lt;br/&gt;&lt;font style=&quot;font-size: 10px&quot;&gt;backend/s3_storage.py&lt;br/&gt;boto3 · AWS S3&lt;br/&gt;proposals/{id}/{ts}.json&lt;br/&gt;Versioned saves&lt;/font&gt;" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#d5e8d4;strokeColor=#82b366;fontSize=11;" vertex="1" parent="1">
+          <mxGeometry x="815" y="120" width="185" height="140" as="geometry" />
+        </mxCell>
+
+        <!-- ═══════════════════════════════════════════════════════════ -->
+        <!--  LAYER 3 — VERIFICATION AGENT                                -->
+        <!-- ═══════════════════════════════════════════════════════════ -->
+        <mxCell id="agent_bg" value="Document Verification Agent (document_verification_agent/)" style="swimlane;startSize=30;fillColor=#fff2cc;strokeColor=#d6b656;fontStyle=1;fontSize=13;" vertex="1" parent="1">
+          <mxGeometry x="60" y="350" width="960" height="230" as="geometry" />
+        </mxCell>
+
+        <mxCell id="agent_orch" value="&lt;b&gt;Agent Orchestrator&lt;/b&gt;&lt;br/&gt;&lt;font style=&quot;font-size: 10px&quot;&gt;agent.py&lt;br/&gt;ThreadPoolExecutor(2)&lt;br/&gt;Concurrent OCR on both docs&lt;/font&gt;" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#fff2cc;strokeColor=#d6b656;fontSize=11;" vertex="1" parent="1">
+          <mxGeometry x="80" y="390" width="175" height="120" as="geometry" />
+        </mxCell>
+
+        <mxCell id="agent_bridge" value="&lt;b&gt;OCR Bridge&lt;/b&gt;&lt;br/&gt;&lt;font style=&quot;font-size: 10px&quot;&gt;ocr_bridge.py&lt;br/&gt;Calls LangGraph pipeline&lt;br/&gt;per document&lt;/font&gt;" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#fff2cc;strokeColor=#d6b656;fontSize=11;" vertex="1" parent="1">
+          <mxGeometry x="285" y="390" width="175" height="120" as="geometry" />
+        </mxCell>
+
+        <mxCell id="agent_llm" value="&lt;b&gt;LLM Comparator&lt;/b&gt;&lt;br/&gt;&lt;font style=&quot;font-size: 10px&quot;&gt;llm_comparator.py&lt;br/&gt;LangChain + OpenRouter&lt;br/&gt;Gemini 2.5 Flash (primary)&lt;br/&gt;Llama 3.3-70B (fallback)&lt;br/&gt;Score: NIC 30 + Name 25&lt;br/&gt;+ Addr 25 + DOB 20 = 100&lt;/font&gt;" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#fff2cc;strokeColor=#d6b656;fontSize=11;" vertex="1" parent="1">
+          <mxGeometry x="490" y="380" width="200" height="170" as="geometry" />
+        </mxCell>
+
+        <mxCell id="agent_result" value="&lt;b&gt;Verification Result&lt;/b&gt;&lt;br/&gt;&lt;font style=&quot;font-size: 10px&quot;&gt;PASS / FAIL&lt;br/&gt;Overall Score /100&lt;br/&gt;Per-field checks&lt;br/&gt;Raw OCR data&lt;/font&gt;" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#fff2cc;strokeColor=#d6b656;fontSize=11;" vertex="1" parent="1">
+          <mxGeometry x="720" y="390" width="175" height="120" as="geometry" />
+        </mxCell>
+
+        <!-- ═══════════════════════════════════════════════════════════ -->
+        <!--  LAYER 4 — LANGGRAPH PIPELINE                                -->
+        <!-- ═══════════════════════════════════════════════════════════ -->
+        <mxCell id="lg_bg" value="LangGraph OCR Pipeline (langgraph-doc-scanner/)" style="swimlane;startSize=30;fillColor=#f8cecc;strokeColor=#b85450;fontStyle=1;fontSize=13;" vertex="1" parent="1">
+          <mxGeometry x="60" y="650" width="960" height="340" as="geometry" />
+        </mxCell>
+
+        <!-- Node boxes inside LangGraph -->
+        <mxCell id="lg_state" value="&lt;b&gt;AgentState&lt;/b&gt;&lt;br/&gt;&lt;font style=&quot;font-size: 10px&quot;&gt;state.py · TypedDict&lt;br/&gt;Shared across all nodes&lt;/font&gt;" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#f8cecc;strokeColor=#b85450;fontSize=11;" vertex="1" parent="1">
+          <mxGeometry x="80" y="690" width="140" height="80" as="geometry" />
+        </mxCell>
+
+        <mxCell id="lg_pre" value="&lt;b&gt;① Preprocessor&lt;/b&gt;&lt;br/&gt;&lt;font style=&quot;font-size: 10px&quot;&gt;nodes/preprocessor.py&lt;br/&gt;OpenCV · NumPy&lt;br/&gt;Grayscale · Denoise&lt;br/&gt;Deskew · CLAHE&lt;br/&gt;Binarise · Resize&lt;br/&gt;90° rotation detect&lt;/font&gt;" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#f8cecc;strokeColor=#b85450;fontSize=11;" vertex="1" parent="1">
+          <mxGeometry x="80" y="800" width="155" height="160" as="geometry" />
+        </mxCell>
+
+        <mxCell id="lg_ocr" value="&lt;b&gt;② PaddleOCR&lt;/b&gt;&lt;br/&gt;&lt;font style=&quot;font-size: 10px&quot;&gt;nodes/paddle_ocr.py&lt;br/&gt;PaddleOCR ≥ 2.8&lt;br/&gt;Text blocks + BBox&lt;br/&gt;Confidence scores&lt;/font&gt;" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#f8cecc;strokeColor=#b85450;fontSize=11;" vertex="1" parent="1">
+          <mxGeometry x="265" y="800" width="155" height="160" as="geometry" />
+        </mxCell>
+
+        <mxCell id="lg_clf" value="&lt;b&gt;③ Classifier&lt;/b&gt;&lt;br/&gt;&lt;font style=&quot;font-size: 10px&quot;&gt;nodes/classifier.py&lt;br/&gt;Keyword heuristics&lt;br/&gt;id_card · water_bill&lt;br/&gt;electricity_bill · unknown&lt;br/&gt;Confidence score&lt;/font&gt;" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#f8cecc;strokeColor=#b85450;fontSize=11;" vertex="1" parent="1">
+          <mxGeometry x="450" y="800" width="155" height="160" as="geometry" />
+        </mxCell>
+
+        <!-- Conditional routing diamond -->
+        <mxCell id="lg_route" value="&lt;b&gt;Conditional&lt;br/&gt;Route&lt;/b&gt;" style="rhombus;whiteSpace=wrap;html=1;fillColor=#fff2cc;strokeColor=#d6b656;fontSize=10;" vertex="1" parent="1">
+          <mxGeometry x="625" y="840" width="110" height="80" as="geometry" />
+        </mxCell>
+
+        <mxCell id="lg_vlm" value="&lt;b&gt;④ VLM Extractor&lt;/b&gt;&lt;br/&gt;&lt;font style=&quot;font-size: 10px&quot;&gt;nodes/vlm_extractor.py&lt;br/&gt;models/vlm_client.py&lt;br/&gt;OpenRouter (default)&lt;br/&gt;Gemini 2.5 Flash&lt;br/&gt;Qwen2-VL-7B (local)&lt;br/&gt;LLaVA via Ollama&lt;/font&gt;" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#f8cecc;strokeColor=#b85450;fontSize=11;" vertex="1" parent="1">
+          <mxGeometry x="760" y="800" width="155" height="160" as="geometry" />
+        </mxCell>
+
+        <mxCell id="lg_val" value="&lt;b&gt;⑤ Validator&lt;/b&gt;&lt;br/&gt;&lt;font style=&quot;font-size: 10px&quot;&gt;nodes/validator.py&lt;br/&gt;Schema validation&lt;br/&gt;Final output build&lt;br/&gt;Validation errors&lt;/font&gt;" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#f8cecc;strokeColor=#b85450;fontSize=11;" vertex="1" parent="1">
+          <mxGeometry x="870" y="800" width="130" height="160" as="geometry" />
+        </mxCell>
+
+        <!-- ═══════════════════════════════════════════════════════════ -->
+        <!--  EXTERNAL SERVICES                                           -->
+        <!-- ═══════════════════════════════════════════════════════════ -->
+        <mxCell id="ext_bg" value="External Cloud Services" style="swimlane;startSize=30;fillColor=#e1d5e7;strokeColor=#9673a6;fontStyle=1;fontSize=13;" vertex="1" parent="1">
+          <mxGeometry x="1060" y="80" width="300" height="460" as="geometry" />
+        </mxCell>
+
+        <mxCell id="ext_openrouter" value="&lt;b&gt;OpenRouter API&lt;/b&gt;&lt;br/&gt;&lt;font style=&quot;font-size: 10px&quot;&gt;openrouter.ai/api/v1&lt;br/&gt;Gemini 2.5 Flash (VLM)&lt;br/&gt;Gemini 2.5 Flash (LLM)&lt;br/&gt;Llama 3.3-70B (fallback)&lt;/font&gt;" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#e1d5e7;strokeColor=#9673a6;fontSize=11;" vertex="1" parent="1">
+          <mxGeometry x="1080" y="125" width="260" height="120" as="geometry" />
+        </mxCell>
+
+        <mxCell id="ext_aws" value="&lt;b&gt;AWS S3&lt;/b&gt;&lt;br/&gt;&lt;font style=&quot;font-size: 10px&quot;&gt;ap-southeast-1&lt;br/&gt;proposals/{id}/{ts}.json&lt;br/&gt;Versioned proposal storage&lt;br/&gt;boto3 SDK&lt;/font&gt;" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#e1d5e7;strokeColor=#9673a6;fontSize=11;" vertex="1" parent="1">
+          <mxGeometry x="1080" y="275" width="260" height="120" as="geometry" />
+        </mxCell>
+
+        <mxCell id="ext_ollama" value="&lt;b&gt;Ollama (optional)&lt;/b&gt;&lt;br/&gt;&lt;font style=&quot;font-size: 10px&quot;&gt;localhost:11434&lt;br/&gt;LLaVA vision model&lt;br/&gt;Local GPU inference&lt;/font&gt;" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#e1d5e7;strokeColor=#9673a6;fontSize=11;" vertex="1" parent="1">
+          <mxGeometry x="1080" y="425" width="260" height="90" as="geometry" />
+        </mxCell>
+
+        <!-- ═══════════════════════════════════════════════════════════ -->
+        <!--  DOCKER COMPOSE WRAPPER                                      -->
+        <!-- ═══════════════════════════════════════════════════════════ -->
+        <mxCell id="docker_label" value="🐳  Docker Compose (docker-compose.yml)  —  janashakthi_backend : janashakthi_frontend" style="text;html=1;strokeColor=#007bff;fillColor=#cfe2ff;align=center;verticalAlign=middle;whiteSpace=wrap;rounded=1;fontSize=12;fontStyle=1;" vertex="1" parent="1">
+          <mxGeometry x="60" y="1010" width="960" height="35" as="geometry" />
+        </mxCell>
+
+        <!-- ═══════════════════════════════════════════════════════════ -->
+        <!--  ARROWS — Frontend → Backend                                 -->
+        <!-- ═══════════════════════════════════════════════════════════ -->
+        <mxCell id="e1" value="HTTP POST&lt;br/&gt;multipart/form-data" style="edgeStyle=orthogonalEdgeStyle;html=1;exitX=1;exitY=0.5;exitDx=0;exitDy=0;entryX=0;entryY=0.5;entryDx=0;entryDy=0;strokeColor=#6c8ebf;fontColor=#6c8ebf;fontSize=10;" edge="1" source="fe_upload" target="api_main" parent="1">
+          <mxGeometry relative="1" as="geometry" />
+        </mxCell>
+
+        <mxCell id="e2" value="JSON proposal" style="edgeStyle=orthogonalEdgeStyle;html=1;exitX=1;exitY=0.5;exitDx=0;exitDy=0;entryX=0;entryY=0.3;entryDx=0;entryDy=0;strokeColor=#6c8ebf;fontColor=#6c8ebf;fontSize=10;" edge="1" source="fe_form" target="api_main" parent="1">
+          <mxGeometry relative="1" as="geometry" />
+        </mxCell>
+
+        <!-- Backend → S3 -->
+        <mxCell id="e3" value="PUT/GET JSON" style="edgeStyle=orthogonalEdgeStyle;html=1;strokeColor=#82b366;fontColor=#82b366;fontSize=10;" edge="1" source="api_s3" target="ext_aws" parent="1">
+          <mxGeometry relative="1" as="geometry" />
+        </mxCell>
+
+        <!-- Backend → Agent -->
+        <mxCell id="e4" value="verify_documents()" style="edgeStyle=orthogonalEdgeStyle;html=1;exitX=0.3;exitY=1;exitDx=0;exitDy=0;entryX=0.3;entryY=0;entryDx=0;entryDy=0;strokeColor=#d6b656;fontColor=#d6b656;fontSize=10;" edge="1" source="api_main" target="agent_orch" parent="1">
+          <mxGeometry relative="1" as="geometry" />
+        </mxCell>
+
+        <!-- Agent Orch → OCR Bridge -->
+        <mxCell id="e5" value="run_ocr_on_image()" style="edgeStyle=orthogonalEdgeStyle;html=1;strokeColor=#d6b656;fontColor=#d6b656;fontSize=10;" edge="1" source="agent_orch" target="agent_bridge" parent="1">
+          <mxGeometry relative="1" as="geometry" />
+        </mxCell>
+
+        <!-- OCR Bridge → LangGraph Pre -->
+        <mxCell id="e6" value="graph.invoke()" style="edgeStyle=orthogonalEdgeStyle;html=1;exitX=0.5;exitY=1;exitDx=0;exitDy=0;entryX=0.5;entryY=0;entryDx=0;entryDy=0;strokeColor=#b85450;fontColor=#b85450;fontSize=10;" edge="1" source="agent_bridge" target="lg_pre" parent="1">
+          <mxGeometry relative="1" as="geometry" />
+        </mxCell>
+
+        <!-- LangGraph node chain -->
+        <mxCell id="e7" style="edgeStyle=orthogonalEdgeStyle;html=1;strokeColor=#b85450;" edge="1" source="lg_pre" target="lg_ocr" parent="1">
+          <mxGeometry relative="1" as="geometry" />
+        </mxCell>
+        <mxCell id="e8" style="edgeStyle=orthogonalEdgeStyle;html=1;strokeColor=#b85450;" edge="1" source="lg_ocr" target="lg_clf" parent="1">
+          <mxGeometry relative="1" as="geometry" />
+        </mxCell>
+        <mxCell id="e9" style="edgeStyle=orthogonalEdgeStyle;html=1;strokeColor=#b85450;" edge="1" source="lg_clf" target="lg_route" parent="1">
+          <mxGeometry relative="1" as="geometry" />
+        </mxCell>
+        <mxCell id="e10" value="readable" style="edgeStyle=orthogonalEdgeStyle;html=1;strokeColor=#b85450;fontColor=#b85450;fontSize=10;" edge="1" source="lg_route" target="lg_vlm" parent="1">
+          <mxGeometry relative="1" as="geometry" />
+        </mxCell>
+        <mxCell id="e11" style="edgeStyle=orthogonalEdgeStyle;html=1;strokeColor=#b85450;" edge="1" source="lg_vlm" target="lg_val" parent="1">
+          <mxGeometry relative="1" as="geometry" />
+        </mxCell>
+        <mxCell id="e10b" value="unreadable→END" style="edgeStyle=orthogonalEdgeStyle;html=1;strokeColor=#b85450;fontColor=#b85450;fontSize=10;dashed=1;" edge="1" source="lg_route" target="lg_val" parent="1">
+          <mxGeometry relative="1" as="geometry">
+            <Array as="points">
+              <mxPoint x="680" y="960" />
+              <mxPoint x="935" y="960" />
+            </Array>
+          </mxGeometry>
+        </mxCell>
+
+        <!-- VLM → OpenRouter -->
+        <mxCell id="e12" value="vision API call" style="edgeStyle=orthogonalEdgeStyle;html=1;strokeColor=#9673a6;fontColor=#9673a6;fontSize=10;" edge="1" source="lg_vlm" target="ext_openrouter" parent="1">
+          <mxGeometry relative="1" as="geometry" />
+        </mxCell>
+
+        <!-- LLM Comparator → OpenRouter -->
+        <mxCell id="e13" value="chat completions" style="edgeStyle=orthogonalEdgeStyle;html=1;strokeColor=#9673a6;fontColor=#9673a6;fontSize=10;" edge="1" source="agent_llm" target="ext_openrouter" parent="1">
+          <mxGeometry relative="1" as="geometry" />
+        </mxCell>
+
+        <!-- Agent Bridge → LLM Comparator -->
+        <mxCell id="e14" value="OCR results" style="edgeStyle=orthogonalEdgeStyle;html=1;strokeColor=#d6b656;fontColor=#d6b656;fontSize=10;" edge="1" source="agent_bridge" target="agent_llm" parent="1">
+          <mxGeometry relative="1" as="geometry" />
+        </mxCell>
+
+        <!-- LLM Comparator → Result -->
+        <mxCell id="e15" style="edgeStyle=orthogonalEdgeStyle;html=1;strokeColor=#d6b656;" edge="1" source="agent_llm" target="agent_result" parent="1">
+          <mxGeometry relative="1" as="geometry" />
+        </mxCell>
+
+        <!-- Result → API -->
+        <mxCell id="e16" value="JSON response" style="edgeStyle=orthogonalEdgeStyle;html=1;strokeColor=#82b366;fontColor=#82b366;fontSize=10;" edge="1" source="agent_result" target="api_main" parent="1">
+          <mxGeometry relative="1" as="geometry">
+            <Array as="points">
+              <mxPoint x="808" y="450" />
+              <mxPoint x="808" y="190" />
+              <mxPoint x="692" y="190" />
+            </Array>
+          </mxGeometry>
+        </mxCell>
+
+        <!-- LangGraph state box arrow to first node -->
+        <mxCell id="e17" value="shared state" style="edgeStyle=orthogonalEdgeStyle;html=1;strokeColor=#b85450;fontColor=#b85450;fontSize=10;dashed=1;" edge="1" source="lg_state" target="lg_pre" parent="1">
+          <mxGeometry relative="1" as="geometry" />
+        </mxCell>
+
+      </root>
+    </mxGraphModel>
+  </diagram>
+</mxfile>
