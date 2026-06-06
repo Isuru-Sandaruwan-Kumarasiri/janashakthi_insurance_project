@@ -16,3 +16,26 @@ OCR/data/temp
 
 # Streamlit
 .streamlit/secrets.toml
+
+
+# Environments
+STP_NSTP_Agent/venv/
+STP_NSTP_Agent/env/
+
+# Python compiled files
+STP_NSTP_Agent/__pycache__/
+*.pyc
+*.pyo
+*.pyd
+
+# Secrets and Configs
+.env
+
+# Databases and Data (To keep the repo lightweight)
+STP_NSTP_Agent/database/
+STP_NSTP_Agent/vector_store/
+STP_NSTP_Agent/data/
+
+# OS generated files
+.DS_Store
+STP_NSTP_Agent/Thumbs.db

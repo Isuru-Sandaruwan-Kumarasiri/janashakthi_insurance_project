@@ -1,0 +1,11 @@
+streamlit
+pandas
+python-dotenv
+pydantic
+
+langchain-core
+langchain-openrouter
+langchain-ollama
+langchain-chroma
+chromadb
+ollama
